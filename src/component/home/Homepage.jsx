@@ -6,6 +6,7 @@ const Homepage = () => {
   const [data, setData] = useState({
     name: "",
     email: "",
+    mobile: "",
     password: "",
   });
 
@@ -13,12 +14,12 @@ const Homepage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     setErr(true);
 
     if (
       data.name.trim() !== "" &&
       data.email.trim() !== "" &&
+      data.mobile.length === 10 &&
       data.password.trim() !== ""
     ) {
       setErr(false);
@@ -39,6 +40,7 @@ const Homepage = () => {
       setData({
         name: "",
         email: "",
+        mobile: "",
         password: "",
       });
     }
@@ -56,6 +58,7 @@ const Homepage = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name */}
           <div>
             <label className="mb-2 block font-medium text-gray-700">
               Full Name
@@ -78,6 +81,7 @@ const Homepage = () => {
             )}
           </div>
 
+          {/* Email */}
           <div>
             <label className="mb-2 block font-medium text-gray-700">
               Email Address
@@ -100,6 +104,37 @@ const Homepage = () => {
             )}
           </div>
 
+          {/* Mobile Number */}
+          <div>
+            <label className="mb-2 block font-medium text-gray-700">
+              Mobile Number
+            </label>
+
+            <input
+              value={data.mobile}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  mobile: e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10),
+                })
+              }
+              type="tel"
+              inputMode="numeric"
+              maxLength={10}
+              placeholder="Enter 10-digit mobile number"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
+            />
+
+            {err && data.mobile.length !== 10 && (
+              <p className="mt-1 text-sm text-red-500">
+                Please enter exactly 10 digits
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
           <div>
             <label className="mb-2 block font-medium text-gray-700">
               Password
