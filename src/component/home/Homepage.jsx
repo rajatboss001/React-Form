@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import Swal from "sweetalert2";
+import emailjs from "@emailjs/browser";
 
 const Homepage = () => {
   const [data, setData] = useState({
@@ -11,43 +12,73 @@ const Homepage = () => {
   });
 
   const [err, setErr] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErr(true);
 
     if (
       data.name.trim() !== "" &&
-      data.email.trim() !== "" &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) &&
       data.mobile.length === 10 &&
       data.password.length >= 8
     ) {
       setErr(false);
+      setLoading(true);
 
-      Swal.fire({
-        title: "Account Created!",
-        text: `Welcome, ${data.name}!`,
-        icon: "success",
-        confirmButtonText: "Continue",
-        confirmButtonColor: "#9333ea",
-        width: 450,
-        padding: "2em",
-        color: "#716add",
-        background: "#ffffff",
-        backdrop: "rgba(0,0,123,0.4)",
-      });
+      try {
+        await emailjs.send(
+          "service_1atnz73",
+          "template_d8vbhul",
+          {
+            user_name: data.name,
+            user_email: data.email,
+            user_mobile: data.mobile,
+          },
+          {
+            publicKey: "A9LP3CIHvgTA8bIw-",
+          }
+        );
 
-      setData({
-        name: "",
-        email: "",
-        mobile: "",
-        password: "",
-      });
+        await Swal.fire({
+          title: "Account Created!",
+          text: `Welcome, ${data.name}!`,
+          icon: "success",
+          confirmButtonText: "Continue",
+          confirmButtonColor: "#9333ea",
+          width: 450,
+          padding: "2em",
+          color: "#716add",
+          background: "#ffffff",
+          backdrop: "rgba(0,0,123,0.4)",
+        });
+
+        setData({
+          name: "",
+          email: "",
+          mobile: "",
+          password: "",
+        });
+
+      } catch (error) {
+        console.log("EmailJS Error:", error);
+
+        Swal.fire({
+          title: "Something went wrong!",
+          text: "Email could not be sent. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#9333ea",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
 
         <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
@@ -99,9 +130,10 @@ const Homepage = () => {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
             />
 
-            {err && data.email.trim() === "" && (
+            {err &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) && (
               <p className="mt-1 text-sm text-red-500">
-                Please enter your email
+                Please enter a valid email address
               </p>
             )}
           </div>
@@ -162,9 +194,10 @@ const Homepage = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full cursor-pointer rounded-lg bg-purple-600 py-3 font-semibold text-white transition-colors hover:bg-purple-700"
+            disabled={loading}
+            className="w-full cursor-pointer rounded-lg bg-purple-600 py-3 font-semibold text-white transition-colors hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Submit
+            {loading ? "Sending..." : "Submit"}
           </button>
 
         </form>
