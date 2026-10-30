@@ -20,7 +20,7 @@ const Homepage = () => {
       data.name.trim() !== "" &&
       data.email.trim() !== "" &&
       data.mobile.length === 10 &&
-      data.password.trim() !== ""
+      data.password.length >= 8
     ) {
       setErr(false);
 
@@ -49,6 +49,7 @@ const Homepage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+
         <h1 className="mb-2 text-center text-3xl font-bold text-gray-900">
           Create Account
         </h1>
@@ -58,6 +59,7 @@ const Homepage = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+
           {/* Full Name */}
           <div>
             <label className="mb-2 block font-medium text-gray-700">
@@ -150,19 +152,21 @@ const Homepage = () => {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-purple-600"
             />
 
-            {err && data.password.trim() === "" && (
+            {err && data.password.length < 8 && (
               <p className="mt-1 text-sm text-red-500">
-                Please enter your password
+                Password must be at least 8 characters
               </p>
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full cursor-pointer rounded-lg bg-purple-600 py-3 font-semibold text-white transition-colors hover:bg-purple-700"
           >
             Submit
           </button>
+
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
@@ -171,6 +175,7 @@ const Homepage = () => {
             Login
           </span>
         </p>
+
       </div>
     </div>
   );
